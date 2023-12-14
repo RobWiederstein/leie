@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Rob Wiederstein">
+
+<title>The LEIE Database</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+<script src="index_files/libs/clipboard/clipboard.min.js"></script>
+<script src="index_files/libs/quarto-html/quarto.js"></script>
+<script src="index_files/libs/quarto-html/popper.min.js"></script>
+<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="index_files/libs/quarto-html/anchor.min.js"></script>
+<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="index_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="index_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="index_files/libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="index_files/libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="index_files/libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+
+<script src="index_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="index_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract">Abstract</a></li>
+  <li><a href="#healthcare-fraud" id="toc-healthcare-fraud" class="nav-link" data-scroll-target="#healthcare-fraud"><span class="toc-section-number">1</span>  Healthcare Fraud</a></li>
+  <li><a href="#machine-learning" id="toc-machine-learning" class="nav-link" data-scroll-target="#machine-learning"><span class="toc-section-number">2</span>  Machine Learning</a></li>
+  <li><a href="#related-works" id="toc-related-works" class="nav-link" data-scroll-target="#related-works"><span class="toc-section-number">3</span>  Related Works</a></li>
+  <li><a href="#methodology" id="toc-methodology" class="nav-link" data-scroll-target="#methodology"><span class="toc-section-number">4</span>  Methodology</a>
+  <ul class="collapse">
+  <li><a href="#the-leie-database" id="toc-the-leie-database" class="nav-link" data-scroll-target="#the-leie-database"><span class="toc-section-number">4.1</span>  The LEIE database</a>
+  <ul class="collapse">
+  <li><a href="#unique-identifiers-for-the-excluded" id="toc-unique-identifiers-for-the-excluded" class="nav-link" data-scroll-target="#unique-identifiers-for-the-excluded"><span class="toc-section-number">4.1.1</span>  Unique Identifiers for the Excluded</a></li>
+  <li><a href="#missing-npis" id="toc-missing-npis" class="nav-link" data-scroll-target="#missing-npis"><span class="toc-section-number">4.1.2</span>  Missing NPIs</a></li>
+  <li><a href="#statutory-exclusions" id="toc-statutory-exclusions" class="nav-link" data-scroll-target="#statutory-exclusions"><span class="toc-section-number">4.1.3</span>  Statutory Exclusions</a></li>
+  <li><a href="#previous-uses-of-the-leie-dataset" id="toc-previous-uses-of-the-leie-dataset" class="nav-link" data-scroll-target="#previous-uses-of-the-leie-dataset"><span class="toc-section-number">4.1.4</span>  Previous Uses of the LEIE dataset</a></li>
+  <li><a href="#mandatory-vs.-permissive-exclusions" id="toc-mandatory-vs.-permissive-exclusions" class="nav-link" data-scroll-target="#mandatory-vs.-permissive-exclusions"><span class="toc-section-number">4.1.5</span>  Mandatory vs.&nbsp;Permissive Exclusions</a></li>
+  <li><a href="#average-monthly-exclusions" id="toc-average-monthly-exclusions" class="nav-link" data-scroll-target="#average-monthly-exclusions"><span class="toc-section-number">4.1.6</span>  Average Monthly Exclusions</a></li>
+  <li><a href="#exclusions-by-statory-provision" id="toc-exclusions-by-statory-provision" class="nav-link" data-scroll-target="#exclusions-by-statory-provision"><span class="toc-section-number">4.1.7</span>  Exclusions by Statory Provision</a></li>
+  <li><a href="#variable-importance" id="toc-variable-importance" class="nav-link" data-scroll-target="#variable-importance"><span class="toc-section-number">4.1.8</span>  Variable Importance</a></li>
+  </ul></li>
+  <li><a href="#cms-part-b-claims-data" id="toc-cms-part-b-claims-data" class="nav-link" data-scroll-target="#cms-part-b-claims-data"><span class="toc-section-number">4.2</span>  CMS Part B Claims Data</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="toc-section-number">5</span>  Results</a></li>
+  <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions"><span class="toc-section-number">6</span>  Conclusions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  <li><a href="#tables" id="toc-tables" class="nav-link" data-scroll-target="#tables">Tables</a></li>
+  <li><a href="#figures" id="toc-figures" class="nav-link" data-scroll-target="#figures">Figures</a>
+  <ul class="collapse">
+  <li><a href="#leie" id="toc-leie" class="nav-link" data-scroll-target="#leie">LEIE</a></li>
+  <li><a href="#part-b" id="toc-part-b" class="nav-link" data-scroll-target="#part-b">Part B</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">The LEIE Database</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Rob Wiederstein </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="abstract" class="level1 unnumbered">
+<h1 class="unnumbered">Abstract</h1>
+<ul>
+<li>U.S. Healthcare costs exceed 20% of GDP.</li>
+<li>Healthcare fraud is estimated at 10% of total healthcare spending.</li>
+<li>Dollars lost to fraud reduce resources available for treatment.</li>
+<li>To date, supervised machine learning models frequently use the LEIE database for the outcome variable.</li>
+<li>A small percentage of the LEIE have NPIs, resulting in highly unbalanced class.</li>
+<li>Few, if any, machine learning studies have taken into account that the exclusions may not be the result of fraudulent activity.</li>
+<li>Some exclusions are not indicative of fraud. Omitting them would create even more highly unbalanced classes, jeopardizing the LEIE as a viable outcome variable.</li>
+</ul>
+</section>
+<section id="healthcare-fraud" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Healthcare Fraud</h1>
+<p>Estimates of healthcare fraud vary dramatically. A 2015 article cited the statistic that, “[i]n the United States, roughly one-third of all healthcare expenses are caused by fraud, waste, and abuse.” (<a href="zotero://select/library/items/ETDNSYD7">Thornton et al., 2015, p.&nbsp;713</a>) (<a href="zotero://open-pdf/library/items/7386FK34?page=1&amp;annotation=LN7C5IZE">pdf</a>).<span class="citation" data-cites="thornton2015"><a href="#ref-thornton2015" role="doc-biblioref">[1]</a></span> While other articles have found fraud prevalent, they estimate it as about 10% of U.S. medical claims. <span class="citation" data-cites="herland2020 joudaki2015 pawar2016"><a href="#ref-herland2020" role="doc-biblioref">[2]</a>–<a href="#ref-pawar2016" role="doc-biblioref">[4]</a></span>. Because a lot of healthcare fraud is undiscovered, there is “no record of these activities. The exact size of annual theft is unknown and is the subject of debate, for which healthcare fraud likely costs tens of billions of dollars a year2.” (<a href="zotero://select/library/items/ENFWPSBF">Herland et al., 2020, p.&nbsp;6</a>) (<a href="zotero://open-pdf/library/items/TMGABNRA?page=5&amp;annotation=ZWTR3JCY">pdf</a>) <span class="citation" data-cites="herland2020"><a href="#ref-herland2020" role="doc-biblioref">[2]</a></span></p>
+<p>Fraud is prevalent in healthcare due to “the difficulty of measuring performance output, the variable and complex nature of the work, little tolerance for ambiguity or error, the highly specialized nature of health services, management’s lack of control over the individuals doing the work, third party reimbursement” and the American “win-at-all-costs mentality.(<a href="zotero://open-pdf/library/items/V33QXEJH?page=4&amp;annotation=KE47TZDP">pdf</a>)<span class="citation" data-cites="byrd2013"><a href="#ref-byrd2013" role="doc-biblioref">[5]</a></span></p>
+<p>Multiple organizations are involved in the prevention of healthcare fraud. Prominent among them, are the OIG, the Department of Jutice (DOJ), and the Center for Program Integrity (CPI). The OIG, maintainer of the LEIE database, supports Medicare Strike Force Teams who along with federal, state and local law enforcement seek out those defrauding Medicare. As of August, 2022, the website lists 2,688 criminal actions, 3483 indictments, $4.7B in receivables.<span class="citation" data-cites="2021"><a href="#ref-2021" role="doc-biblioref">[6]</a></span>.</p>
+<p>In July of 2022, the DOJ announced “criminal charges against 36 defendants in 13 federal districts across the United States for more than $1.2 billion in alleged fraudulent telemedicine, cardiovascular and cancer genetic testing, and durable medical equipment (DME) schemes.”<span class="citation" data-cites="departmentofjustice2022"><a href="#ref-departmentofjustice2022" role="doc-biblioref">[7]</a></span></p>
+<p>Additionally, CMS houses the Center for Program Integrity (CPI) whose mission “is to detect and combat fraud, waste and abuse of the Medicare and Medicaid programs.” <span class="citation" data-cites="cms2023"><a href="#ref-cms2023" role="doc-biblioref">[8]</a></span>CPI reframes that mission as “making sure CMS is paying the right provider the right amount for services covered under our programs.”<span class="citation" data-cites="cms2023"><a href="#ref-cms2023" role="doc-biblioref">[8]</a></span> CPI reports annually to Congress. The CPI reported an improper payment rate in 2021 of 6.26%.<span class="citation" data-cites="u.s.deparmentofhealthandhumanservicescentersformedicare&amp;medicaidservices2023"><a href="#ref-u.s.deparmentofhealthandhumanservicescentersformedicare&amp;medicaidservices2023" role="doc-biblioref">[9]</a></span></p>
+</section>
+<section id="machine-learning" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Machine Learning</h1>
+<p>“[I]n the U.S. alone, the application of machine learning and data mining approaches has the potential to save the healthcare industry up to $450 billion each year.” <span class="citation" data-cites="herland2020"><a href="#ref-herland2020" role="doc-biblioref">[2]</a></span> Due to the volume of healthcare claims and the expense associated with fraud, machine learning is an economical way to detect and identify bad actors. Healthcare fraud is described as a classic “big data” problem in that it meets the 5 V’s: volume, variety, velocity, veracity and value.[<span class="citation" data-cites="johnson2019a"><a href="#ref-johnson2019a" role="doc-biblioref">[10]</a></span>]<span class="citation" data-cites="herland2018"><a href="#ref-herland2018" role="doc-biblioref">[11]</a></span></p>
+<p>“The most common and well-accepted categorization that is used by machine learning experts divides data mining methods into ‘supervised’ and ‘unsupervised’ methods”<span class="citation" data-cites="joudaki2015a"><a href="#ref-joudaki2015a" role="doc-biblioref">[12]</a></span> “Supervised methods attempt to discover the relationship between input variables (attributes or features) and an output (dependent) variable (or target attribute). Unsupervised learning methods are applied when no prior information of the dependent variable is available for use.” <span class="citation" data-cites="joudaki2015a"><a href="#ref-joudaki2015a" role="doc-biblioref">[12]</a></span> “Supervised methods are usually used for classification and prediction objectives including traditional statistical methods such as regression analysis” <span class="citation" data-cites="joudaki2015a"><a href="#ref-joudaki2015a" role="doc-biblioref">[12]</a></span> “Unsupervised methods are usually used for description including association rules extraction such as Apriori algorithm and segmentation methods such as clustering and anomaly detection.” <span class="citation" data-cites="joudaki2015a"><a href="#ref-joudaki2015a" role="doc-biblioref">[12]</a></span> “the studies demonstrate that both supervised and unsupervised techniques have important merits in discovering different fraud strategies and schemes”<span class="citation" data-cites="joudaki2015a"><a href="#ref-joudaki2015a" role="doc-biblioref">[12]</a></span></p>
+<p>In 2015, Thornton noted that some of the challenge was the lack of publically avaiable and accessible datasets. “For the health insurance industry to succeed in combatting fraudsters, it must also know itself – its systems and how data mining and analytic techniques can be applied within them to detect fraudulent activity.” <span class="citation" data-cites="thornton2015"><a href="#ref-thornton2015" role="doc-biblioref">[1]</a></span> “Based on practical experience, we expect the lack of training data (structured datasets containing health care fraud cases) and a lack of useful open data available as the main causes for the relative small amount of research into the technological aspect of health insurance fraud.” <span class="citation" data-cites="thornton2015"><a href="#ref-thornton2015" role="doc-biblioref">[1]</a></span></p>
+<p>Machine learning can train a model to identify fraudulent claim patterns by learning the training set’s characteristics. However, machine learning encounters a host of difficulties including:</p>
+<ol type="1">
+<li><p>the lack of an explicit rule to identify fraudulent claims from non-fraudulent claims;</p></li>
+<li><p>the number of fraudulent claims to non-fraudulent claims is small, a problem referred to as “class imbalance”;</p></li>
+<li><p>claim variability can be extreme in that many variables are involved like disease, patient characteristics, doctor preferences;</p></li>
+<li><p>fraudulent actors change their behaviors and methods over time in response to the compliance environment; and</p></li>
+<li><p>frequent regulatory changes like changing drug lists and slow responses in fraud detection algorithms.<span class="citation" data-cites="zhang2020"><a href="#ref-zhang2020" role="doc-biblioref">[13]</a></span></p></li>
+</ol>
+<p>Machine learning holds promise for the efficient detection of healthcare fraud, but one study noted its preoccupation with technical methods as opposed to practical advice to managers and and policy makers.<span class="citation" data-cites="joudaki2015a"><a href="#ref-joudaki2015a" role="doc-biblioref">[12]</a></span></p>
+<p><mark>Bring current to 2023 for close</mark></p>
+</section>
+<section id="related-works" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Related Works</h1>
+</section>
+<section id="methodology" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Methodology</h1>
+<section id="the-leie-database" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="the-leie-database"><span class="header-section-number">4.1</span> The LEIE database</h2>
+<p>“LEIE” is an acronym for the List of Excluded Individuals and Entitities. The Centers for Medicare and Medicaid Office of Inspector General (OIG) maintain the list. The list includes individuals and entities who cannot be reimbursed from Medicare because of previous misconduct. “Medicare is a U.S. government program that provides healthcare insurance and financial support for the elderly population, ages 65 and older, and other select groups of beneficiaries.”<span class="citation" data-cites="herland2020"><a href="#ref-herland2020" role="doc-biblioref">[2]</a></span> Examples of misconduct include a felony drug conviction or the fraudulent submission of a Medicare claim. Additionally, the employment of an individual or entity on the LEIE may expose the employer or contractor to civil monetary penalties (CMP).</p>
+<p>The exclusion list is the result of series of Congressional initiatives to reduce healthcare fraud. “In 1977, in the Medicare-Medicaid Anti-Fraud and Abuse Amendments . . . Congress first mandated the exclusion of physicians and other practitioners convicted of program-related crimes from participation in Medicare and Medicaid.”<span class="citation" data-cites="departmentofhealthandhumanservicesofficeofinspectorgeneral2020"><a href="#ref-departmentofhealthandhumanservicesofficeofinspectorgeneral2020" role="doc-biblioref">[14]</a></span></p>
+<p>Then in 1981, it was followed “with enactment of the Civil Monetary Penalties Law (CMPL) to further address health care fraud and abuse.The CMPL authorizes the Department and OIG to impose CMPs, assessments, and program exclusions against any person that submits false or fraudulent or certain other types of improper claims for Medicare or Medicaid payment.”<span class="citation" data-cites="departmentofhealthandhumanservicesofficeofinspectorgeneral2020"><a href="#ref-departmentofhealthandhumanservicesofficeofinspectorgeneral2020" role="doc-biblioref">[14]</a></span> Beginning in 1996, the enactment of the “Health Insurance Portability and Accountability Act (HIPAA) . . . and the Balanced Budget Act (BBA)” in 1997 expanded OIG’s sanctioning authority. These statutes expanded OIG exclusion authority to all “Federal health care programs.”<span class="citation" data-cites="departmentofhealthandhumanservicesofficeofinspectorgeneral2020"><a href="#ref-departmentofhealthandhumanservicesofficeofinspectorgeneral2020" role="doc-biblioref">[14]</a></span></p>
+<p>“The effect of an OIG exclusion is that no Federal health care program payment may be made for any items or services furnished (1) by an excluded person or (2) at the medical direction or on the prescription of an excluded person.8 The exclusion and the payment prohibition continue to apply to an individual even if he or she changes from one health care profession to another while excluded.”<span class="citation" data-cites="departmentofhealthandhumanservicesofficeofinspectorgeneral2020"><a href="#ref-departmentofhealthandhumanservicesofficeofinspectorgeneral2020" role="doc-biblioref">[14]</a></span> Employers have an ongoing obligation to know whether their employees or contractors are on the LEIE. Since the OIG updates the LEIE monthly, 2013 guidance suggested that a monthly check would minimize the probability of a violation. CMS in 2011 issued final regulations requiring states screen all enrolled providers monthly.<span class="citation" data-cites="departmentofhealthandhumanservicesofficeofinspectorgeneral2020"><a href="#ref-departmentofhealthandhumanservicesofficeofinspectorgeneral2020" role="doc-biblioref">[14]</a></span></p>
+<p>The list is not comprehensive because many who commit fraud are not included. “For example, providers who are accused of overcharging insurers or Medicare often relinquish the overpayments without any public acknowledgement or notice.” <span class="citation" data-cites="branting2016"><a href="#ref-branting2016" role="doc-biblioref">[15]</a></span> The LEIE is used in many machine learning efforts to label the data and identify fraud or no fraud. <span class="citation" data-cites="herland2020 branting2016"><a href="#ref-herland2020" role="doc-biblioref">[2]</a>, <a href="#ref-branting2016" role="doc-biblioref">[15]</a></span> As of the date of download, August 11, 2023, the LEIE dataset included 77,942 individuals who have been excluded from participating in Medicare. Two other sanctions databases are sometimes mentioned in connection with the LEIE: the National Practitioner Databank (NPDB) and the Healthcare Integrity and and Protection Databank (HIPDB). The HIPDB data was subsumed by the NPDB in 2013.<span class="citation" data-cites="zotero-2838"><a href="#ref-zotero-2838" role="doc-biblioref">[16]</a></span>.</p>
+<div class="cell" data-tbl-cap="LEIE Variable Completion Rate" data-lable="LEIE Variable Completion Rate">
+
+</div>
+<section id="unique-identifiers-for-the-excluded" class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="unique-identifiers-for-the-excluded"><span class="header-section-number">4.1.1</span> Unique Identifiers for the Excluded</h3>
+<p>The list provides basic identifiers for those who are excluded from participating in Medicare. The information includes, name, last location, and date of birth. However, social security numbers are omitted in deference to prevailing federal law. For providers, they may be identified by either the National Provider Identifier (NPI) or the Unique Provider Identifier (UPIN).</p>
+<p>According to the LEIE website, “the NPI (National Provider Identifier) has replaced the UPIN as the unique number used to identify health care providers. The Centers for Medicaid &amp; Medicare Services first began assigning NPIs in 2006, and providers were required to use NPIs as of mid-2008. See <a href="https://oig.hhs.gov/faqs/exclusions-faq/">page</a>.</p>
+<p>According to the LEIE website, “the UPIN (Unique Physician Identification Number) was established by the Centers for Medicare &amp; Medicaid Services as a unique provider identifier in lieu of the SSN. UPINs were assigned to physicians as well as certain non-physician practitioners and medical group practices. CMS no longer maintains the UPIN registry.</p>
+<p>“Many individuals and entities that are excluded by OIG do not have NPIs to include in the LEIE. For those individuals and entities that have NPIs, OIG has added that information to records starting in 2008 and has included NPIs in the LEIE since that time.”</p>
+</section>
+<section id="missing-npis" class="level3" data-number="4.1.2">
+<h3 data-number="4.1.2" class="anchored" data-anchor-id="missing-npis"><span class="header-section-number">4.1.2</span> Missing NPIs</h3>
+<p>Participants who can be identified by an NPI have been increasing since their adoption in 2009. While the overall rate is 8.7%, 25% of newly added individuals and entities have an NPI included. This significantly improves the quality and usability of the database.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="plots\leie_missing_identifiers_by_year.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="plots\leie_missing_identifiers_by_year.jpg" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+</section>
+<section id="statutory-exclusions" class="level3" data-number="4.1.3">
+<h3 data-number="4.1.3" class="anchored" data-anchor-id="statutory-exclusions"><span class="header-section-number">4.1.3</span> Statutory Exclusions</h3>
+<p>Include count within table.</p>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped" style="font-size: 10px; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> statute </th>
+   <th style="text-align:left;"> agency </th>
+   <th style="text-align:left;"> exclusion </th>
+   <th style="text-align:left;"> description </th>
+   <th style="text-align:right;"> n_count </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;font-weight: bold;color: #18bc9c !important;"> 1128b4 </td>
+   <td style="text-align:left;font-weight: bold;color: #18bc9c !important;"> Social Security </td>
+   <td style="text-align:left;font-weight: bold;color: #18bc9c !important;"> Permissive </td>
+   <td style="text-align:left;font-weight: bold;color: #18bc9c !important;"> License revocation or suspension </td>
+   <td style="text-align:right;font-weight: bold;color: #18bc9c !important;"> 31084 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1128a1 </td>
+   <td style="text-align:left;"> Social Security </td>
+   <td style="text-align:left;"> Mandatory </td>
+   <td style="text-align:left;"> Conviction of program related crimes </td>
+   <td style="text-align:right;"> 23109 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1128a2 </td>
+   <td style="text-align:left;"> Social Security </td>
+   <td style="text-align:left;"> Mandatory </td>
+   <td style="text-align:left;"> Conviction for patient abuse </td>
+   <td style="text-align:right;"> 7449 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1128a3 </td>
+   <td style="text-align:left;"> Social Security </td>
+   <td style="text-align:left;"> Mandatory </td>
+   <td style="text-align:left;"> Felony conviction for healthcare fraud </td>
+   <td style="text-align:right;"> 4987 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1128a4 </td>
+   <td style="text-align:left;"> Social Security </td>
+   <td style="text-align:left;"> Mandatory </td>
+   <td style="text-align:left;"> Felony conviction for controlled substance </td>
+   <td style="text-align:right;"> 3140 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1128b14 </td>
+   <td style="text-align:left;"> Social Security </td>
+   <td style="text-align:left;"> Permissive </td>
+   <td style="text-align:left;"> Default on student loans or scholarships </td>
+   <td style="text-align:right;"> 2227 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1128b8 </td>
+   <td style="text-align:left;"> Social Security </td>
+   <td style="text-align:left;"> Permissive </td>
+   <td style="text-align:left;"> Entities controlled by sanctioned individual </td>
+   <td style="text-align:right;"> 1494 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1128b1 </td>
+   <td style="text-align:left;"> Social Security </td>
+   <td style="text-align:left;"> Permissive </td>
+   <td style="text-align:left;"> Conviction for misdemeanor fraud </td>
+   <td style="text-align:right;"> 861 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;color: #18bc9c !important;"> 1128b5 </td>
+   <td style="text-align:left;font-weight: bold;color: #18bc9c !important;"> Social Security </td>
+   <td style="text-align:left;font-weight: bold;color: #18bc9c !important;"> Permissive </td>
+   <td style="text-align:left;font-weight: bold;color: #18bc9c !important;"> Suspension under federal or state health care program </td>
+   <td style="text-align:right;font-weight: bold;color: #18bc9c !important;"> 802 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1128b7 </td>
+   <td style="text-align:left;"> Social Security </td>
+   <td style="text-align:left;"> Permissive </td>
+   <td style="text-align:left;"> Fraud or kickbacks or other prohibited </td>
+   <td style="text-align:right;"> 683 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1128b3 </td>
+   <td style="text-align:left;"> Social Security </td>
+   <td style="text-align:left;"> Permissive </td>
+   <td style="text-align:left;"> Conviction for misdemeanor controlled substance </td>
+   <td style="text-align:right;"> 316 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1128b6 </td>
+   <td style="text-align:left;"> Social Security </td>
+   <td style="text-align:left;"> Permissive </td>
+   <td style="text-align:left;"> Claim for excessive charges </td>
+   <td style="text-align:right;"> 67 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1128b2 </td>
+   <td style="text-align:left;"> Social Security </td>
+   <td style="text-align:left;"> Permissive </td>
+   <td style="text-align:left;"> Conviction for obstruction of an investigation </td>
+   <td style="text-align:right;"> 59 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1156 </td>
+   <td style="text-align:left;"> Social Security </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> Services are not economical &amp; medically necessary </td>
+   <td style="text-align:right;"> 56 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1128b15 </td>
+   <td style="text-align:left;"> Social Security </td>
+   <td style="text-align:left;"> Permissive </td>
+   <td style="text-align:left;"> Individuals controlled by a sanctioned entity </td>
+   <td style="text-align:right;"> 34 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1128b11 </td>
+   <td style="text-align:left;"> Social Security </td>
+   <td style="text-align:left;"> Permissive </td>
+   <td style="text-align:left;"> Failure to supply payment information </td>
+   <td style="text-align:right;"> 11 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1128b16 </td>
+   <td style="text-align:left;"> Social Security </td>
+   <td style="text-align:left;"> Permissive </td>
+   <td style="text-align:left;"> Making a false statement of material fact </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1128b12 </td>
+   <td style="text-align:left;"> Social Security </td>
+   <td style="text-align:left;"> Permissive </td>
+   <td style="text-align:left;"> Failure to grant immediate access </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</section>
+<section id="previous-uses-of-the-leie-dataset" class="level3" data-number="4.1.4">
+<h3 data-number="4.1.4" class="anchored" data-anchor-id="previous-uses-of-the-leie-dataset"><span class="header-section-number">4.1.4</span> Previous Uses of the LEIE dataset</h3>
+<ul>
+<li>Herland 2020</li>
+</ul>
+<p>Herland retained only physicians with mandatory exclusions under section 1128. “The LEIE database does not include NPI numbers for all physicians and after preliminary analysis, we found that combining first name, last name, and address is not 100% reliable in determining identity.” Only physicians with NPI numbers that matched in the Part B data to the LEIE database were used. 1,310 physicians were deemed fraudulent.</p>
+</section>
+<section id="mandatory-vs.-permissive-exclusions" class="level3" data-number="4.1.5">
+<h3 data-number="4.1.5" class="anchored" data-anchor-id="mandatory-vs.-permissive-exclusions"><span class="header-section-number">4.1.5</span> Mandatory vs.&nbsp;Permissive Exclusions</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="plots/leie_exclusions_by_category.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="plots/leie_exclusions_by_category.jpg" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+</section>
+<section id="average-monthly-exclusions" class="level3" data-number="4.1.6">
+<h3 data-number="4.1.6" class="anchored" data-anchor-id="average-monthly-exclusions"><span class="header-section-number">4.1.6</span> Average Monthly Exclusions</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./plots/leie_avg_monthly_excl.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="./plots/leie_avg_monthly_excl.jpg" class="img-fluid figure-img" width="500"></a></p>
+</figure>
+</div>
+</section>
+<section id="exclusions-by-statory-provision" class="level3" data-number="4.1.7">
+<h3 data-number="4.1.7" class="anchored" data-anchor-id="exclusions-by-statory-provision"><span class="header-section-number">4.1.7</span> Exclusions by Statory Provision</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="plots/individuals_excluded_by_statute_provision.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="plots/individuals_excluded_by_statute_provision.jpg" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+</section>
+<section id="variable-importance" class="level3" data-number="4.1.8">
+<h3 data-number="4.1.8" class="anchored" data-anchor-id="variable-importance"><span class="header-section-number">4.1.8</span> Variable Importance</h3>
+<p>A random forest model was applied to the LEIE data to check for variable importance. An outcome variable was constucted that was “present” for an observation that contained either an NPI or UPIN number or “absent” for an observation that contained neither. Multiple variables were dropped like first name, middle name, last name, street address, the npi and npi columns. The most important variable was the date of the exclusion. Since the presence of the npi has been increasing over time, the results matched expectations. See <a href="#tbl-leie-var-summary">Table&nbsp;1</a>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./plots/variable_importance_plot.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="./plots/variable_importance_plot.jpg" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="cms-part-b-claims-data" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="cms-part-b-claims-data"><span class="header-section-number">4.2</span> CMS Part B Claims Data</h2>
+<p>CMS furnishes “Part B” data. The data is a series of datasets that “provide information on services and procedures provided to Original Medicare (fee-for-service) Part B (Medical Insurance) beneficiaries by physicians and other healthcare professionals. These datasets contain information on use, payments, and submitted charges organized by National Provider Identifier (NPI), Healthcare Common Procedure Coding System (HCPCS) code, and geography.”<span class="citation" data-cites="centersformedicareandmedicaidservices2023"><a href="#ref-centersformedicareandmedicaidservices2023" role="doc-biblioref">[17]</a></span> CMS groups the “unique National Provider Identification (NPI) numbers, Healthcare Common Procedure Coding System (HCPCS) code, and place of service (e.g.&nbsp;office or hospital).” <span class="citation" data-cites="bauder2018a"><a href="#ref-bauder2018a" role="doc-biblioref">[18]</a></span></p>
+</section>
+</section>
+<section id="results" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Results</h1>
+</section>
+<section id="conclusions" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Conclusions</h1>
+</section>
+<section id="references" class="level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body" role="doc-bibliography">
+<div id="ref-thornton2015" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[1] </div><div class="csl-right-inline">D. Thornton, M. Brinkhuis, C. Amrit, and R. Aly, <span>“Categorizing and <span>Describing</span> the <span>Types</span> of <span>Fraud</span> in <span>Healthcare</span>,”</span> <em>Procedia Computer Science</em>, vol. 64, pp. 713–720, Jan. 2015, doi: <a href="https://doi.org/10.1016/j.procs.2015.08.594">10.1016/j.procs.2015.08.594</a>.</div>
+</div>
+<div id="ref-herland2020" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[2] </div><div class="csl-right-inline">M. Herland, R. A. Bauder, and T. M. Khoshgoftaar, <span>“Approaches for identifying <span>US</span> medicare fraud in provider claims data,”</span> <em>Health care management science</em>, vol. 23, pp. 2–19, 2020.</div>
+</div>
+<div id="ref-joudaki2015" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[3] </div><div class="csl-right-inline">H. Joudaki <em>et al.</em>, <span>“Improving <span>Fraud</span> and <span>Abuse Detection</span> in <span>General Physician Claims</span>: <span>A Data Mining Study</span>,”</span> <em>International Journal of Health Policy and Management</em>, vol. 5, no. 3, pp. 165–172, Nov. 2015, doi: <a href="https://doi.org/10.15171/ijhpm.2015.196">10.15171/ijhpm.2015.196</a>.</div>
+</div>
+<div id="ref-pawar2016" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[4] </div><div class="csl-right-inline">M. P. Pawar, <span>“Review on data mining techniques for fraud detection in health insurance,”</span> <em>IJETT</em>, vol. 3, no. 2, pp. 1128–1131, 2016.</div>
+</div>
+<div id="ref-byrd2013" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[5] </div><div class="csl-right-inline">J. Byrd, P. Powell, and D. Smith, <span>“Health <span>Care Fraud</span>: <span>An Introduction</span> to a <span>Major Cost Issue</span>.”</span> <span>Rochester, NY</span>, Jun. 2013. Accessed: Mar. 25, 2023. [Online]. Available: <a href="https://papers.ssrn.com/abstract=2285860">https://papers.ssrn.com/abstract=2285860</a></div>
+</div>
+<div id="ref-2021" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[6] </div><div class="csl-right-inline"><span>“Medicare <span>Fraud Strike Force</span>,”</span> <em>Office of Inspector General | Government Oversight | U.S. Department of Health and Human Services</em>. Mar. 2021. Accessed: Aug. 17, 2023. [Online]. Available: <a href="https://oig.hhs.gov/fraud/strike-force/">https://oig.hhs.gov/fraud/strike-force/</a></div>
+</div>
+<div id="ref-departmentofjustice2022" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[7] </div><div class="csl-right-inline">Department of Justice, <span>“Office of <span>Public Affairs</span> | <span>Justice Department Charges Dozens</span> for $1.2 <span>Billion</span> in <span>Health Care Fraud</span> | <span>United States Department</span> of <span>Justice</span>.”</span> Jul. 2022. Accessed: Aug. 17, 2023. [Online]. Available: <a href="https://www.justice.gov/opa/pr/justice-department-charges-dozens-12-billion-health-care-fraud">https://www.justice.gov/opa/pr/justice-department-charges-dozens-12-billion-health-care-fraud</a></div>
+</div>
+<div id="ref-cms2023" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[8] </div><div class="csl-right-inline">CMS, <span>“<span>CMS Center</span> for <span>Program Integrity</span>.”</span> 2023. Accessed: Aug. 17, 2023. [Online]. Available: <a href="https://www.cms.gov/About-CMS/Components/CPI">https://www.cms.gov/About-CMS/Components/CPI</a></div>
+</div>
+<div id="ref-u.s.deparmentofhealthandhumanservicescentersformedicare&amp;medicaidservices2023" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[9] </div><div class="csl-right-inline">U.S. Deparment of Health and Human Services Centers for Medicare &amp; Medicaid Services, <span>“2021 <span>Report</span> to <span>Congress Medicare</span> and <span>Medicaid Program Integrity</span>.”</span> May 2023. Accessed: Aug. 17, 2023. [Online]. Available: <a href="https://www.cms.gov/files/document/fy2021-medicare-and-medicaid-annual-report-congress.pdf">https://www.cms.gov/files/document/fy2021-medicare-and-medicaid-annual-report-congress.pdf</a></div>
+</div>
+<div id="ref-johnson2019a" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[10] </div><div class="csl-right-inline">J. M. Johnson and T. M. Khoshgoftaar, <span>“Deep <span>Learning</span> and <span>Data Sampling</span> with <span>Imbalanced Big Data</span>,”</span> pp. 175–183, Jul. 2019, doi: <a href="https://doi.org/10.1109/iri.2019.00038">10.1109/iri.2019.00038</a>.</div>
+</div>
+<div id="ref-herland2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[11] </div><div class="csl-right-inline">M. Herland, T. M. Khoshgoftaar, T. M. Khoshgoftaar, Taghi M. Khoshgoftaar, Taghi M. Khoshgoftaar, and R. A. Bauder, <span>“Big <span>Data</span> fraud detection using multiple medicare data sources,”</span> <em>Journal of Big Data</em>, vol. 5, no. 1, pp. 1–21, Dec. 2018, doi: <a href="https://doi.org/10.1186/s40537-018-0138-3">10.1186/s40537-018-0138-3</a>.</div>
+</div>
+<div id="ref-joudaki2015a" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[12] </div><div class="csl-right-inline">H. Joudaki <em>et al.</em>, <span>“Using <span>Data Mining</span> to <span>Detect Health Care Fraud</span> and <span>Abuse</span>: <span>A Review</span> of <span>Literature</span>,”</span> <em>Global Journal of Health Science</em>, vol. 7, no. 1, pp. 194–202, Jan. 2015, doi: <a href="https://doi.org/10.5539/gjhs.v7n1p194">10.5539/gjhs.v7n1p194</a>.</div>
+</div>
+<div id="ref-zhang2020" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[13] </div><div class="csl-right-inline">C. Zhang, X. Xiao, and C. Wu, <span>“Medical <span>Fraud</span> and <span>Abuse Detection System Based</span> on <span>Machine Learning</span>,”</span> <em>International Journal of Environmental Research and Public Health</em>, vol. 17, no. 19, p. 7265, Oct. 2020, doi: <a href="https://doi.org/10.3390/ijerph17197265">10.3390/ijerph17197265</a>.</div>
+</div>
+<div id="ref-departmentofhealthandhumanservicesofficeofinspectorgeneral2020" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[14] </div><div class="csl-right-inline">Department of Health and Human Services Office of Inspector General, <span>“Special <span>Advisory Bulletin</span> on the <span>Effect</span> of <span>Exclusion</span> from <span>Participation</span> in <span>Federal Health Care Programs</span>.”</span> Jun. 2020. Accessed: Sep. 02, 2023. [Online]. Available: <a href="https://www.hhs.gov/guidance/document/updated-special-advisory-bulletin-effect-exclusion-participation-federal-health-care">https://www.hhs.gov/guidance/document/updated-special-advisory-bulletin-effect-exclusion-participation-federal-health-care</a></div>
+</div>
+<div id="ref-branting2016" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[15] </div><div class="csl-right-inline">L. K. Branting, F. Reeder, J. Gold, and T. Champney, <span>“Graph analytics for healthcare fraud risk estimation,”</span> in <em>2016 <span>IEEE</span>/<span>ACM International Conference</span> on <span>Advances</span> in <span>Social Networks Analysis</span> and <span>Mining</span> (<span>ASONAM</span>)</em>, Aug. 2016, pp. 845–851. doi: <a href="https://doi.org/10.1109/ASONAM.2016.7752336">10.1109/ASONAM.2016.7752336</a>.</div>
+</div>
+<div id="ref-zotero-2838" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[16] </div><div class="csl-right-inline"><span>“The <span>NPDB</span> - <span>Home Page</span>.”</span> Accessed: Sep. 03, 2023. [Online]. Available: <a href="https://www.npdb.hrsa.gov/index.jsp">https://www.npdb.hrsa.gov/index.jsp</a></div>
+</div>
+<div id="ref-centersformedicareandmedicaidservices2023" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[17] </div><div class="csl-right-inline">Centers for Medicare and Medicaid Services, <span>“Medicare <span>Physician</span> &amp; <span>Other Practitioners</span> - <span>Centers</span> for <span>Medicare</span> &amp; <span>Medicaid Services Data</span>.”</span> 2023. Accessed: Aug. 29, 2023. [Online]. Available: <a href="https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners">https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners</a></div>
+</div>
+<div id="ref-bauder2018a" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[18] </div><div class="csl-right-inline">R. A. Bauder, R. A. Bauder, T. M. Khoshgoftaar, T. M. Khoshgoftaar, Taghi M. Khoshgoftaar, and Taghi M. Khoshgoftaar, <span>“A <span>Survey</span> of <span>Medicare Data Processing</span> and <span>Integration</span> for <span>Fraud Detection</span>,”</span> pp. 9–14, Jul. 2018, doi: <a href="https://doi.org/10.1109/iri.2018.00010">10.1109/iri.2018.00010</a>.</div>
+</div>
+<div id="ref-2023" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[19] </div><div class="csl-right-inline"><span>“Explainable <span>Machine Learning Models</span> for <span>Medicare Fraud Detection</span>.”</span> Jun. 2023. doi: <a href="https://doi.org/10.21203/rs.3.rs-3076353/v1">10.21203/rs.3.rs-3076353/v1</a>.</div>
+</div>
+<div id="ref-2023a" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[20] </div><div class="csl-right-inline"><span>“Fraud <span>Costs Medicare Billions</span> of <span>Dollars Every Year</span>,”</span> <em>AARP</em>. May 2023. Accessed: Aug. 17, 2023. [Online]. Available: <a href="https://www.aarp.org/money/scams-fraud/info-2019/medicare.html">https://www.aarp.org/money/scams-fraud/info-2019/medicare.html</a></div>
+</div>
+<div id="ref-bauder2017" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[21] </div><div class="csl-right-inline">R. A. Bauder, T. M. Khoshgoftaar, T. M. Khoshgoftaar, Taghi M. Khoshgoftaar, and Taghi M. Khoshgoftaar, <span>“Medicare <span>Fraud Detection Using Machine Learning Methods</span>,”</span> pp. 858–865, Dec. 2017, doi: <a href="https://doi.org/10.1109/icmla.2017.00-48">10.1109/icmla.2017.00-48</a>.</div>
+</div>
+<div id="ref-bauder2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[22] </div><div class="csl-right-inline">R. A. Bauder, T. M. Khoshgoftaar, T. M. Khoshgoftaar, Taghi M. Khoshgoftaar, and Taghi M. Khoshgoftaar, <span>“Medicare <span>Fraud Detection Using Random Forest</span> with <span>Class Imbalanced Big Data</span>,”</span> pp. 80–87, Jul. 2018, doi: <a href="https://doi.org/10.1109/iri.2018.00019">10.1109/iri.2018.00019</a>.</div>
+</div>
+<div id="ref-bauder2018b" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[23] </div><div class="csl-right-inline">R. A. Bauder and T. M. Khoshgoftaar, <span>“The detection of medicare fraud using machine learning methods with excluded provider labels,”</span> in <em>The <span>Thirty-First International Flairs Conference</span></em>, 2018.</div>
+</div>
+<div id="ref-bauder2018c" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[24] </div><div class="csl-right-inline">R. Bauder, R. da Rosa, and T. Khoshgoftaar, <span>“Identifying <span>Medicare Provider Fraud</span> with <span>Unsupervised Machine Learning</span>,”</span> in <em>2018 <span>IEEE International Conference</span> on <span>Information Reuse</span> and <span>Integration</span> (<span>IRI</span>)</em>, Jul. 2018, pp. 285–292. doi: <a href="https://doi.org/10.1109/IRI.2018.00051">10.1109/IRI.2018.00051</a>.</div>
+</div>
+<div id="ref-bauder2018d" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[25] </div><div class="csl-right-inline">R. A. Bauder, T. M. Khoshgoftaar, T. M. Khoshgoftaar, Taghi M. Khoshgoftaar, and Taghi M. Khoshgoftaar, <span>“The effects of varying class distribution on learner behavior for medicare fraud detection with imbalanced big data,”</span> vol. 6, no. 1, pp. 9–9, Sep. 2018, doi: <a href="https://doi.org/10.1007/s13755-018-0051-3">10.1007/s13755-018-0051-3</a>.</div>
+</div>
+<div id="ref-berwick2012" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[26] </div><div class="csl-right-inline">D. M. Berwick and A. D. Hackbarth, <span>“Eliminating <span>Waste</span> in <span>US Health Care</span>,”</span> <em>JAMA</em>, vol. 307, no. 14, pp. 1513–1516, Apr. 2012, doi: <a href="https://doi.org/10.1001/jama.2012.362">10.1001/jama.2012.362</a>.</div>
+</div>
+<div id="ref-chandola2013" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[27] </div><div class="csl-right-inline">V. Chandola, S. R. Sukumar, and J. C. Schryver, <span>“Knowledge discovery from massive healthcare claims data,”</span> pp. 1312–1320, Aug. 2013, doi: <a href="https://doi.org/10.1145/2487575.2488205">10.1145/2487575.2488205</a>.</div>
+</div>
+<div id="ref-fernandez-delgado2014" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[28] </div><div class="csl-right-inline">M. Fernández-Delgado, E. Cernadas, S. Barro, and D. Amorim, <span>“Do we need hundreds of classifiers to solve real world classification problems?”</span> <em>The Journal of Machine Learning Research</em>, vol. 15, no. 1, pp. 3133–3181, Jan. 2014.</div>
+</div>
+<div id="ref-garcia2019" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[29] </div><div class="csl-right-inline">P. J. García, <span>“Corruption in global health: The open secret,”</span> <em>The Lancet</em>, vol. 394, no. 10214, pp. 2119–2124, Dec. 2019, doi: <a href="https://doi.org/10.1016/S0140-6736(19)32527-9">10.1016/S0140-6736(19)32527-9</a>.</div>
+</div>
+<div id="ref-herland2019" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[30] </div><div class="csl-right-inline">M. Herland, R. A. Bauder, T. M. Khoshgoftaar, T. M. Khoshgoftaar, Taghi M. Khoshgoftaar, and Taghi M. Khoshgoftaar, <span>“The effects of class rarity on the evaluation of supervised healthcare fraud detection models,”</span> <em>Journal of Big Data</em>, vol. 6, no. 1, pp. 1–33, Feb. 2019, doi: <a href="https://doi.org/10.1186/s40537-019-0181-8">10.1186/s40537-019-0181-8</a>.</div>
+</div>
+<div id="ref-johnson2019" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[31] </div><div class="csl-right-inline">J. M. Johnson and T. M. Khoshgoftaar, <span>“Medicare fraud detection using neural networks,”</span> <em>Journal of Big Data</em>, vol. 6, no. 1, pp. 1–35, Jul. 2019, doi: <a href="https://doi.org/10.1186/s40537-019-0225-0">10.1186/s40537-019-0225-0</a>.</div>
+</div>
+<div id="ref-oigtexashhs" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[32] </div><div class="csl-right-inline">OIG Texas HHS, <span>“Exclusions | <span>Office</span> of <span>Inspector General</span>.”</span> Accessed: Sep. 01, 2023. [Online]. Available: <a href="https://oig.hhs.texas.gov/exclusions">https://oig.hhs.texas.gov/exclusions</a></div>
+</div>
+<div id="ref-peluso2023health" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[33] </div><div class="csl-right-inline">B. Peluso <em>et al.</em>, <span>“Health care fraud,”</span> vol. 60, p. 937, 2023.</div>
+</div>
+<div id="ref-shekhar2023a" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[34] </div><div class="csl-right-inline">S. Shekhar, J. Leder-Luis, and L. Akoglu, <span>“Unsupervised <span>Machine Learning</span> for <span>Explainable Health Care Fraud Detection</span>.”</span> <span>Rochester, NY</span>, Feb. 2023. Accessed: Aug. 09, 2023. [Online]. Available: <a href="https://papers.ssrn.com/abstract=4356230">https://papers.ssrn.com/abstract=4356230</a></div>
+</div>
+<div id="ref-waghade2018" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[35] </div><div class="csl-right-inline">S. S. Waghade, <span>“A <span>Comprehensive Study</span> of <span>Healthcare Fraud Detection</span> based on <span>Machine Learning</span>,”</span> 2018. Accessed: Mar. 25, 2023. [Online]. Available: <a href="https://www.semanticscholar.org/paper/A-Comprehensive-Study-of-Healthcare-Fraud-Detection-Waghade/ca2337f7216a879b8595613adee14246dd4fead0">https://www.semanticscholar.org/paper/A-Comprehensive-Study-of-Healthcare-Fraud-Detection-Waghade/ca2337f7216a879b8595613adee14246dd4fead0</a></div>
+</div>
+<div id="ref-zotero-2580" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[36] </div><div class="csl-right-inline"><span>“The $272 billion swindle: <span>Why</span> thieves love <span>America</span>’s health-care system,”</span> <em>The Economist</em>, Accessed: Aug. 22, 2023. [Online]. Available: <a href="https://www.economist.com/united-states/2014/05/31/the-272-billion-swindle">https://www.economist.com/united-states/2014/05/31/the-272-billion-swindle</a></div>
+</div>
+<div id="ref-zotero-2753" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[37] </div><div class="csl-right-inline"><span>“Exclusions | <span>Office</span> of <span>Inspector General</span> | <span>U</span>.<span>S</span>. <span>Department</span> of <span>Health</span> and <span>Human Services</span>.”</span> Accessed: Aug. 30, 2023. [Online]. Available: <a href="https://www.oig.hhs.gov/exclusions/index.asp">https://www.oig.hhs.gov/exclusions/index.asp</a></div>
+</div>
+<div id="ref-zotero-2757" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[38] </div><div class="csl-right-inline"><span>“Medicaid <span>Exclusions</span> | <span>Office</span> of the <span>Medicaid Inspector General</span>.”</span> Accessed: Sep. 01, 2023. [Online]. Available: <a href="https://omig.ny.gov/medicaid-fraud/medicaid-exclusions">https://omig.ny.gov/medicaid-fraud/medicaid-exclusions</a></div>
+</div>
+<div id="ref-zotero-2759" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[39] </div><div class="csl-right-inline"><span>“Provider <span>Suspended</span> and <span>Ineligible List</span> (<span>S</span>&amp;<span>I List</span>) - <span>California Health</span> and <span>Human Services Open Data Portal</span>.”</span> Accessed: Sep. 01, 2023. [Online]. Available: <a href="https://data.chhs.ca.gov/dataset/provider-suspended-and-ineligible-list-s-i-list">https://data.chhs.ca.gov/dataset/provider-suspended-and-ineligible-list-s-i-list</a></div>
+</div>
+<div id="ref-R-base" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[40] </div><div class="csl-right-inline">R Core Team, <em>R: A language and environment for statistical computing</em>. Vienna, Austria: R Foundation for Statistical Computing, 2023. Available: <a href="https://www.R-project.org/">https://www.R-project.org/</a></div>
+</div>
+<div id="ref-randF" class="csl-entry" role="doc-biblioentry">
+<div class="csl-left-margin">[41] </div><div class="csl-right-inline">A. Liaw and M. Wiener, <span>“Classification and regression by randomForest,”</span> <em>R News</em>, vol. 2, no. 3, pp. 18–22, 2002, Available: <a href="https://CRAN.R-project.org/doc/Rnews/">https://CRAN.R-project.org/doc/Rnews/</a></div>
+</div>
+</div>
+</section>
+<section id="tables" class="level1 unnumbered">
+<h1 class="unnumbered">Tables</h1>
+<div class="cell" data-hash="index_cache/html/tbl-leie-var-summary_aa3a6b855d3eeabfdf7980aea894d766">
+<div class="cell-output-display">
+<div id="tbl-leie-var-summary" class="anchored">
+
+<table class="table table-striped" style="font-size: 10px; margin-left: auto; margin-right: auto;"><caption>Table&nbsp;1:  LEIE Variable Summary </caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> skim_type </th>
+   <th style="text-align:left;"> skim_variable </th>
+   <th style="text-align:right;"> n_missing </th>
+   <th style="text-align:right;"> complete_rate </th>
+   <th style="text-align:right;"> numeric.mean </th>
+   <th style="text-align:right;"> Date.n_unique </th>
+   <th style="text-align:right;"> character.n_unique </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Date </td>
+   <td style="text-align:left;"> dob </td>
+   <td style="text-align:right;"> 4003 </td>
+   <td style="text-align:right;"> 0.9475924 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 21092 </td>
+   <td style="text-align:right;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Date </td>
+   <td style="text-align:left;"> excldate </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1.0000000 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2258 </td>
+   <td style="text-align:right;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> lastname </td>
+   <td style="text-align:right;"> 3153 </td>
+   <td style="text-align:right;"> 0.9587206 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 29340 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> firstname </td>
+   <td style="text-align:right;"> 3153 </td>
+   <td style="text-align:right;"> 0.9587206 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 11900 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> midname </td>
+   <td style="text-align:right;"> 22445 </td>
+   <td style="text-align:right;"> 0.7061480 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 8664 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> busname </td>
+   <td style="text-align:right;"> 73229 </td>
+   <td style="text-align:right;"> 0.0412794 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 3100 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> general </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1.0000000 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 87 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> specialty </td>
+   <td style="text-align:right;"> 4088 </td>
+   <td style="text-align:right;"> 0.9464795 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 199 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;color: 18bc9c !important;"> character </td>
+   <td style="text-align:left;font-weight: bold;color: 18bc9c !important;"> upin </td>
+   <td style="text-align:right;font-weight: bold;color: 18bc9c !important;"> 70248 </td>
+   <td style="text-align:right;font-weight: bold;color: 18bc9c !important;"> 0.0803069 </td>
+   <td style="text-align:right;font-weight: bold;color: 18bc9c !important;"> NA </td>
+   <td style="text-align:right;font-weight: bold;color: 18bc9c !important;"> NA </td>
+   <td style="text-align:right;font-weight: bold;color: 18bc9c !important;"> 5957 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;color: 18bc9c !important;"> character </td>
+   <td style="text-align:left;font-weight: bold;color: 18bc9c !important;"> npi </td>
+   <td style="text-align:right;font-weight: bold;color: 18bc9c !important;"> 69963 </td>
+   <td style="text-align:right;font-weight: bold;color: 18bc9c !important;"> 0.0840381 </td>
+   <td style="text-align:right;font-weight: bold;color: 18bc9c !important;"> NA </td>
+   <td style="text-align:right;font-weight: bold;color: 18bc9c !important;"> NA </td>
+   <td style="text-align:right;font-weight: bold;color: 18bc9c !important;"> 6293 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> address </td>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:right;"> 0.9998822 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 72452 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> city </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0.9999869 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 9919 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> state </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 0.9999345 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 60 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> zip </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1.0000000 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 17408 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> excltype </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1.0000000 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 18 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> reindate </td>
+   <td style="text-align:right;"> 76382 </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> waiverdate </td>
+   <td style="text-align:right;"> 76382 </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> wvrstate </td>
+   <td style="text-align:right;"> 76381 </td>
+   <td style="text-align:right;"> 0.0000131 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> character </td>
+   <td style="text-align:left;"> exclusion </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1.0000000 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> factor </td>
+   <td style="text-align:left;"> type </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1.0000000 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> numeric </td>
+   <td style="text-align:left;"> age_at_excl </td>
+   <td style="text-align:right;"> 4003 </td>
+   <td style="text-align:right;"> 0.9475924 </td>
+   <td style="text-align:right;"> 45.64651 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="figures" class="level1 unnumbered">
+<h1 class="unnumbered">Figures</h1>
+<section id="leie" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="leie">LEIE</h2>
+<div id="fig-elephant" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><a href="./plots/hm_by_excl_state.jpg" class="lightbox" title="Elephant" data-gallery="quarto-lightbox-gallery-6"><img src="./plots/hm_by_excl_state.jpg" class="img-fluid figure-img" style="width:5in"></a></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1: Elephant</figcaption><p></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./plots/hm_by_state_year.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-7"><img src="./plots/hm_by_state_year.jpg" class="img-fluid figure-img" style="width:5in"></a></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./plots/hm_leie_excl_to_general.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-8"><img src="./plots/hm_leie_excl_to_general.jpg" class="img-fluid figure-img" style="width:5in"></a></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./plots/hm_physician_specialty_by_excl.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-9"><img src="./plots/hm_physician_specialty_by_excl.jpg" class="img-fluid figure-img" style="width:5in"></a></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./plots/individuals_excluded_by_statute_provision.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-10"><img src="./plots/individuals_excluded_by_statute_provision.jpg" class="img-fluid figure-img" style="width:5in"></a></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./plots/leie_avg_monthly_excl.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-11"><img src="./plots/leie_avg_monthly_excl.jpg" class="img-fluid figure-img" style="width:5in"></a></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./plots/leie_excluded_phys_by_category.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-12"><img src="./plots/leie_excluded_phys_by_category.jpg" class="img-fluid figure-img" style="width:5in"></a></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./plots/leie_exclusions_by_category.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-13"><img src="./plots/leie_exclusions_by_category.jpg" class="img-fluid figure-img" style="width:5in"></a></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./plots/leie_exclusions_by_gen_categ.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-14"><img src="./plots/leie_exclusions_by_gen_categ.jpg" class="img-fluid figure-img" style="width:5in"></a></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./plots/leie_exclusions_by_type.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-15"><img src="./plots/leie_exclusions_by_type.jpg" class="img-fluid figure-img" style="width:5in"></a></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./plots/leie_exclusions_type_and_category.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-16"><img src="./plots/leie_exclusions_type_and_category.jpg" class="img-fluid figure-img" style="width:5in"></a></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./plots/leie_missing_identifiers_by_year.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-17"><img src="./plots/leie_missing_identifiers_by_year.jpg" class="img-fluid figure-img" style="width:5in"></a></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./plots/leie_physican_excl_by_specialty.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-18"><img src="./plots/leie_physican_excl_by_specialty.jpg" class="img-fluid figure-img" style="width:5in"></a></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./plots/variable_importance_plot.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-19"><img src="./plots/variable_importance_plot.jpg" class="img-fluid figure-img" style="width:5in"></a></p>
+</figure>
+</div>
+</section>
+<section id="part-b" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="part-b">Part B</h2>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","closeEffect":"zoom","selector":".lightbox","loop":true,"openEffect":"zoom"});</script>
+
+
+
+</body></html>

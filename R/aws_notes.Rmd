@@ -1,0 +1,44 @@
+---
+title: "Untitled"
+author: "Robert Wiederstein"
+date: "2023-09-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+-  specify AWS _security credentials_.
+
+-  Credentials authenticate and authorize your requests.
+
+- S3 (Amazon Simple Storage Service)
+
+- AWS credentials are not required if S3 bucket is publically shared.
+
+- Credentials are either long-term or short-term.
+
+- Users are either "Root user" or "IAM user." 
+
+- Root user and IAM users and access keys have long-term security credentials that do not expire.
+
+- IAM roles, users in AWS IAM Center and "federated users" have temporary security credentials.
+
+Security Considerations
+
+the account is created as "Root User" or account owner. The root user has full access to everything.
+
+## MFA
+
+Recommended for AWS account root user credentials.
+
+Go to the "Security credentials" or IAM dashboard.
+
+## Programattic Access
+
+Long term access key has two keys: an access key ID and a secret access key as a set. If you don't download your secret access key or lose it, you must create a new one.
+
+
+

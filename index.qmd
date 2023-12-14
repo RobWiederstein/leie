@@ -1,0 +1,234 @@
+---
+title: "The LEIE Database"
+author: "Rob Wiederstein"
+bibliography: ["healthcare_fraud_ml.bib", "packages.bib"]
+csl: ieee.csl
+nocite: |
+  @*
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-title: "Contents"
+    toc-location: "right"
+    number-sections: true
+    theme: flatly
+    
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: "#>" 
+    warn: FALSE
+    echo: FALSE
+    message: FALSE
+filters:
+   - lightbox
+lightbox: auto
+---
+
+```{r libraries, include=FALSE}
+library(readr)
+library(kableExtra)
+#devtools::install_version("knitr", version = "1.42", repos = "http://cran.us.r-project.org")
+library(DT)
+```
+
+```{r load-datasets, include=FALSE}
+leie_summary <- read_csv("./data/leie_summary_table.csv", show_col_types = F)
+statutory_exclusion <- read_csv(file = "./data/statutory_exclusion_w_count.csv")
+```
+
+# Abstract{-}
+
+- U.S. Healthcare costs exceed 20% of GDP.
+- Healthcare fraud is estimated at 10% of total healthcare spending.
+- Dollars lost to fraud reduce resources available for treatment.
+- To date, supervised machine learning models frequently use the LEIE database for the outcome variable.
+- A small percentage of the LEIE have NPIs, resulting in highly unbalanced class.
+- Few, if any, machine learning studies have taken into account that the exclusions may not be the result of fraudulent activity.
+- Some exclusions are not indicative of fraud.  Omitting them would create even more highly unbalanced classes, jeopardizing the LEIE as a viable outcome variable.
+
+# Healthcare Fraud
+
+Estimates of healthcare fraud vary dramatically.  A 2015 article cited the statistic that, “[i]n the United States, roughly one-third of all healthcare expenses are caused by fraud, waste, and abuse.” ([Thornton et al., 2015, p. 713](zotero://select/library/items/ETDNSYD7)) ([pdf](zotero://open-pdf/library/items/7386FK34?page=1&annotation=LN7C5IZE)).[@thornton2015]  While other articles have found fraud prevalent, they estimate it as about 10% of U.S. medical claims. [@herland2020; @joudaki2015; @pawar2016]. Because a lot of healthcare fraud is undiscovered, there is "no record of these activities. The exact size of annual theft is unknown and is the subject of debate, for which healthcare fraud likely costs tens of billions of dollars a year2.” ([Herland et al., 2020, p. 6](zotero://select/library/items/ENFWPSBF)) ([pdf](zotero://open-pdf/library/items/TMGABNRA?page=5&annotation=ZWTR3JCY)) [@herland2020]
+
+Fraud is prevalent in healthcare due to "the difficulty of measuring performance output, the variable and complex nature of the work, little tolerance for ambiguity or error, the highly specialized nature of health services, management’s lack of control over the individuals doing the work, third party reimbursement" and the American "win-at-all-costs mentality.([pdf](zotero://open-pdf/library/items/V33QXEJH?page=4&annotation=KE47TZDP))[@byrd2013]
+
+Multiple organizations are involved in the prevention of healthcare fraud.  Prominent among them, are the OIG, the Department of Jutice (DOJ), and the Center for Program Integrity (CPI). The OIG, maintainer of the LEIE database,  supports Medicare Strike Force Teams who along with federal, state and local law enforcement seek out those defrauding Medicare.  As of August, 2022, the website lists 2,688 criminal actions, 3483 indictments, \$4.7B in receivables.[@2021]. 
+
+In July of 2022, the DOJ announced "criminal charges against 36 defendants in 13 federal districts across the United States for more than $1.2 billion in alleged fraudulent telemedicine, cardiovascular and cancer genetic testing, and durable medical equipment (DME) schemes."[@departmentofjustice2022]
+
+Additionally, CMS houses the Center for Program Integrity (CPI) whose mission "is to detect and combat fraud, waste and abuse of the Medicare and Medicaid programs." [@cms2023]CPI reframes that mission as "making sure CMS is paying the right provider the right amount for services covered under our programs."[@cms2023] CPI reports annually to Congress. The CPI reported an improper payment rate in 2021 of 6.26%.[@u.s.deparmentofhealthandhumanservicescentersformedicare&medicaidservices2023]
+
+
+# Machine Learning
+
+"[I]n the U.S. alone, the application of machine learning and data mining approaches has the potential to save the healthcare industry up to $450 billion each year." [@herland2020]  Due to the volume of healthcare claims and the expense associated with fraud, machine learning is an economical way to detect and identify bad actors. Healthcare fraud is described as a classic "big data" problem in that it meets the 5 V's: volume, variety, velocity, veracity and value.[@johnson2019a][@herland2018]
+
+“The most common and well-accepted categorization that is used by machine learning experts divides data mining methods into 'supervised' and 'unsupervised' methods”[@joudaki2015a] "Supervised methods attempt to discover the relationship between input variables (attributes or features) and an output (dependent) variable (or target attribute). Unsupervised learning methods are applied when no prior information of the dependent variable is available for use.” [@joudaki2015a] “Supervised methods are usually used for classification and prediction objectives including traditional statistical methods such as regression analysis” [@joudaki2015a] "Unsupervised methods are usually used for description including association rules extraction such as Apriori algorithm and segmentation methods such as clustering and anomaly detection." [@joudaki2015a] “the studies demonstrate that both supervised and unsupervised techniques have important merits in discovering different fraud strategies and schemes”[@joudaki2015a]
+
+
+In 2015, Thornton noted that some of the challenge was the lack of publically avaiable and accessible datasets.  “For the health insurance industry to succeed in combatting fraudsters, it must also know itself – its systems and how data mining and analytic techniques can be applied within them to detect fraudulent activity.” [@thornton2015] “Based on practical experience, we expect the lack of training data (structured datasets containing health care fraud cases) and a lack of useful open data available as the main causes for the relative small amount of research into the technological aspect of health insurance fraud.” [@thornton2015]
+
+Machine learning can train a model to identify fraudulent claim patterns by learning the training set's characteristics.  However, machine learning encounters a host of difficulties including:
+
+1. the lack of an explicit rule to identify fraudulent claims from non-fraudulent claims;
+
+2. the number of fraudulent claims to non-fraudulent claims is small, a problem referred to as "class imbalance";
+
+3. claim variability can be extreme in that many variables are involved like disease, patient characteristics, doctor preferences;
+
+4. fraudulent actors change their behaviors and methods over time in response to the compliance environment; and
+
+5. frequent regulatory changes like changing drug lists and slow responses in fraud detection algorithms.[@zhang2020]
+
+Machine learning holds promise for the efficient detection of healthcare fraud, but one study noted its preoccupation with technical methods as opposed to practical advice to managers and and policy makers.[@joudaki2015a]
+
+<mark>Bring current to 2023 for close</mark>
+
+# Related Works
+
+# Methodology
+
+## The LEIE database
+
+"LEIE" is an acronym for the List of Excluded Individuals and Entitities.  The Centers for Medicare and Medicaid Office of Inspector General (OIG) maintain the list. The list includes individuals and entities who cannot be reimbursed from Medicare because of previous misconduct.  "Medicare is a U.S. government program that provides healthcare insurance and financial support for the elderly population, ages 65 and older, and other select groups of beneficiaries."[@herland2020] Examples of misconduct include a felony drug conviction or the fraudulent submission of a Medicare claim. Additionally, the employment of an individual or entity on the LEIE may expose the employer or contractor to  civil monetary penalties (CMP). 
+
+The exclusion list is the result of series of Congressional initiatives to reduce healthcare fraud. "In 1977, in the Medicare-Medicaid Anti-Fraud and Abuse Amendments . . . Congress first mandated the exclusion of physicians and other practitioners convicted of program-related crimes from participation in Medicare and Medicaid."[@departmentofhealthandhumanservicesofficeofinspectorgeneral2020] 
+
+Then in 1981, it was followed "with enactment of the Civil Monetary Penalties Law (CMPL) to further address health care fraud and abuse.The CMPL authorizes the Department and OIG to impose CMPs, assessments, and program exclusions against any person that submits false or fraudulent or certain other types of improper claims for Medicare or Medicaid payment."[@departmentofhealthandhumanservicesofficeofinspectorgeneral2020]  Beginning in 1996, the enactment of the "Health Insurance Portability and Accountability Act (HIPAA) . . . and the Balanced Budget Act (BBA)" in 1997 expanded OIG’s sanctioning authority. These statutes expanded OIG exclusion authority to all “Federal health care programs.”[@departmentofhealthandhumanservicesofficeofinspectorgeneral2020]
+
+"The effect of an OIG exclusion is that no Federal health care program payment may be made for any items or services furnished (1) by an excluded person or (2) at the medical direction or on the prescription of an excluded person.8 The exclusion and the payment prohibition continue to apply to an individual even if he or she changes from one health care profession to another while excluded."[@departmentofhealthandhumanservicesofficeofinspectorgeneral2020] Employers have an ongoing obligation to know whether their employees or contractors are on the LEIE. Since the OIG updates the LEIE monthly, 2013 guidance suggested that a monthly check would minimize the probability of a violation. CMS in 2011 issued final regulations requiring states screen all enrolled providers monthly.[@departmentofhealthandhumanservicesofficeofinspectorgeneral2020]
+
+The list is not comprehensive because many who commit fraud are not included. "For example, providers who are accused of overcharging insurers or Medicare often relinquish the overpayments without any public acknowledgement or notice.” [@branting2016]  The LEIE is used in many machine learning efforts to label the data and identify fraud or no fraud. [@herland2020; @branting2016]
+As of the date of download, August 11, 2023, the LEIE dataset included 77,942 individuals who have been excluded from participating in Medicare.  Two other sanctions databases are sometimes mentioned in connection with the LEIE: the National Practitioner Databank (NPDB) and the Healthcare Integrity and and Protection Databank (HIPDB). The HIPDB data was subsumed by the NPDB in 2013.[@zotero-2838].
+
+```{r leie-table}
+#| tbl-cap: LEIE Variable Completion Rate
+#| lable: LEIE Variable Completion Rate
+#| eval: FALSE
+#| cache: FALSE
+datatable(leie_summary, 
+          rownames = FALSE, 
+          options = list(order = list(list(4, 'desc')),
+                         dom = "t"
+                         )
+          ) |> 
+    formatStyle(fontSize = '10px') |> 
+    formatRound(4:5, 3)
+```
+
+### Unique Identifiers for the Excluded
+
+The list provides basic identifiers for those who are excluded from participating in Medicare. The information includes, name, last location, and date of birth.  However, social security numbers are omitted in deference to prevailing federal law.  For providers, they may be identified by either the National Provider Identifier (NPI) or the Unique Provider Identifier (UPIN). 
+
+According to the LEIE website, "the NPI (National Provider Identifier) has replaced the UPIN as the unique number used to identify health care providers. The Centers for Medicaid & Medicare Services first began assigning NPIs in 2006, and providers were required to use NPIs as of mid-2008. See [page](https://oig.hhs.gov/faqs/exclusions-faq/).
+
+According to the LEIE website, "the UPIN (Unique Physician Identification Number) was established by the Centers for Medicare & Medicaid Services as a unique provider identifier in lieu of the SSN. UPINs were assigned to physicians as well as certain non-physician practitioners and medical group practices. CMS no longer maintains the UPIN registry.
+
+"Many individuals and entities that are excluded by OIG do not have NPIs to include in the LEIE. For those individuals and entities that have NPIs, OIG has added that information to records starting in 2008 and has included NPIs in the LEIE since that time."
+
+### Missing NPIs
+
+Participants who can be identified by an NPI have been increasing since their adoption in 2009. While the overall rate is 8.7%, 25% of newly added individuals and entities have an NPI included.  This significantly improves the quality and usability of the database.
+
+![](plots\leie_missing_identifiers_by_year.jpg)
+
+### Statutory Exclusions
+
+Include count within table.
+
+```{r statexl}
+statutory_exclusion %>%
+  kbl() %>%
+  kable_styling(bootstrap_options = "striped", font_size = 10) |> 
+  row_spec(c(1,9), bold = T, color = "#18bc9c")
+```
+
+### Previous Uses of the LEIE dataset
+
+- Herland 2020
+
+Herland retained only physicians with mandatory exclusions under section 1128.  “The LEIE database does not include NPI numbers for all physicians and after preliminary analysis, we found that combining first name, last name, and address is not 100% reliable in determining identity.” Only physicians with NPI numbers that matched in the Part B data to the LEIE database were used. 1,310 physicians were deemed fraudulent.
+
+### Mandatory vs. Permissive Exclusions
+
+![](plots/leie_exclusions_by_category.jpg)
+
+### Average Monthly Exclusions
+
+![](./plots/leie_avg_monthly_excl.jpg){width=500}
+
+
+### Exclusions by Statory Provision
+
+![](plots/individuals_excluded_by_statute_provision.jpg)
+
+### Variable Importance
+
+A random forest model was applied to the LEIE data to check for variable importance.  An outcome variable was constucted that was "present" for an observation that contained either an NPI or UPIN number or "absent" for an observation that contained neither.  Multiple variables were dropped like first name, middle name, last name, street address, the npi and npi columns.  The most important variable was the date of the exclusion.  Since the presence of the npi has been increasing over time, the results matched expectations. See [@tbl-leie-var-summary].
+
+```{r vip-plot}
+knitr::include_graphics("./plots/variable_importance_plot.jpg")
+```
+
+## CMS Part B Claims Data
+
+CMS furnishes "Part B" data.  The data is a series of datasets that "provide information on services and procedures provided to Original Medicare (fee-for-service) Part B (Medical Insurance) beneficiaries by physicians and other healthcare professionals. These datasets contain information on use, payments, and submitted charges organized by National Provider Identifier (NPI), Healthcare Common Procedure Coding System (HCPCS) code, and geography."[@centersformedicareandmedicaidservices2023] CMS groups the "unique National Provider Identification (NPI) numbers, Healthcare Common Procedure Coding System (HCPCS) code, and place of service (e.g. office or hospital)." [@bauder2018a]
+ 
+
+
+
+# Results
+
+# Conclusions
+
+# References{-}
+
+::: {#refs}
+:::
+
+# Tables {-}
+
+```{r}
+#| label: tbl-leie-var-summary
+#| tbl-cap: LEIE Variable Summary
+#| cache: TRUE
+leie_summary %>%
+  kbl() %>%
+  kable_styling(bootstrap_options = "striped", font_size = 10) |>    row_spec(9:10, bold = T, color = "18bc9c")
+```
+
+# Figures {-}
+
+## LEIE {-}
+
+![Elephant](./plots/hm_by_excl_state.jpg){width=5in #fig-elephant}
+
+![](./plots/hm_by_state_year.jpg){width=5in}
+ 
+![](./plots/hm_leie_excl_to_general.jpg){width=5in}
+
+![](./plots/hm_physician_specialty_by_excl.jpg){width=5in}
+ 
+![](./plots/individuals_excluded_by_statute_provision.jpg){width=5in}
+ 
+![](./plots/leie_avg_monthly_excl.jpg){width=5in}
+ 
+![](./plots/leie_excluded_phys_by_category.jpg){width=5in}
+ 
+![](./plots/leie_exclusions_by_category.jpg){width=5in}
+ 
+![](./plots/leie_exclusions_by_gen_categ.jpg){width=5in}
+ 
+![](./plots/leie_exclusions_by_type.jpg){width=5in}
+ 
+![](./plots/leie_exclusions_type_and_category.jpg){width=5in}
+ 
+![](./plots/leie_missing_identifiers_by_year.jpg){width=5in}
+ 
+![](./plots/leie_physican_excl_by_specialty.jpg){width=5in}
+ 
+![](./plots/variable_importance_plot.jpg){width=5in}
+
+## Part B {-}
