@@ -8,3 +8,5 @@
 .quarto
 data/
 data-raw/
+
+/.quarto/
